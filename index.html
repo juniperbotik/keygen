@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key Generator</title>
+    <title>Key & Nick Generator</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -42,13 +42,14 @@
             cursor: pointer;
             font-size: 18px;
             transition: background-color 0.3s ease-in-out;
+            margin: 5px;
         }
 
         button:hover {
             background-color: #45a049;
         }
 
-        #keyOutput {
+        #keyOutput, #randomOutput, #nickOutput {
             margin-top: 20px;
             font-size: 130%;
             color: #333;
@@ -101,46 +102,161 @@
     </div>
 
     <div class="container">
-        <label for="quantity">Quantity:</label>
-        <input type="number" id="quantity" min="1" max="100" value="1">
-        <br>
-        <button onclick="generateKeys()">Generate!</button>
-        <div id="keyOutput"></div>
-        <button onclick="downloadKeys()">Download Keys</button>
+        <button onclick="showKeyGen()">KeyGen</button>
+        <button onclick="showRandomGen()">Random</button>
+        <button onclick="showNickGen()">NickGen</button>
+
+        <div id="keyGen" style="display: none;">
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantityKeyGen" min="1" max="100" value="1">
+            <br>
+            <button onclick="generateKeys()">Generate Keys</button>
+            <div id="keyOutput"></div>
+            <button onclick="downloadKeys()">Download keys.txt</button>
+        </div>
+
+        <div id="randomGen" style="display: none;">
+            <label for="min">Min:</label>
+            <input type="number" id="min" min="0" value="0">
+            <br>
+            <label for="max">Max:</label>
+            <input type="number" id="max" min="1" value="10">
+            <br>
+            <button onclick="generateRandomNumber()">Generate Random Number</button>
+            <div id="randomOutput"></div>
+        </div>
+
+        <div id="nickGen" style="display: none;">
+            <button onclick="generateCustomNicks()">Custom</button>
+            <button onclick="generateIliNicks()">IliNicks</button>
+            <button onclick="generateQ0Nicks()">Q0Nicks</button>
+            <br>
+            <input type="text" id="customNickInput" placeholder="Enter Nickname Pattern">
+            <br>
+            <input type="number" id="customNickQuantity" min="1" value="1">
+            <br>
+            <button onclick="generateCustomNicks()">Generate Custom Nicks</button>
+            <div id="nickOutput"></div>
+            <button onclick="downloadCustomNicks()">Download Custom-nicks.txt</button>
+        </div>
     </div>
 
     <script>
+        function showKeyGen() {
+            document.getElementById('keyGen').style.display = 'block';
+            document.getElementById('randomGen').style.display = 'none';
+            document.getElementById('nickGen').style.display = 'none';
+        }
+
+        function showRandomGen() {
+            document.getElementById('keyGen').style.display = 'none';
+            document.getElementById('randomGen').style.display = 'block';
+            document.getElementById('nickGen').style.display = 'none';
+        }
+
+        function showNickGen() {
+            document.getElementById('keyGen').style.display = 'none';
+            document.getElementById('randomGen').style.display = 'none';
+            document.getElementById('nickGen').style.display = 'block';
+        }
+
         function generateKeys() {
-            const quantity = document.getElementById('quantity').value;
+            const quantity = document.getElementById('quantityKeyGen').value;
 
             // Устанавливаем текст кнопки
-            document.querySelector('button').innerText = `Generate ${quantity > 1 ? quantity + ' Keys' : 'Key'}!`;
+            document.querySelector('#keyGen button').innerText = `Generate ${quantity > 1 ? quantity + ' Keys' : 'Key'}!`;
 
+            const keys = [];
             for (let i = 0; i < quantity; i++) {
                 const key = generateRandomKey();
-                
-                // Добавляем в лог
-                const log = document.getElementById('log');
-                log.innerHTML = `<div>${key}</div>` + log.innerHTML;
+                keys.push(key);
 
                 // Добавляем анимированный квадрат
                 addAnimatedSquare(key);
             }
+
+            // Выводим сгенерированные ключи
+            document.getElementById('keyOutput').innerText = keys.join('\n');
         }
 
         function downloadKeys() {
-            const log = document.getElementById('log').innerHTML;
+            const keys = document.getElementById('keyOutput').innerText;
 
-            const content = log
-                .split('<div>')
-                .slice(1) // Remove empty first element
-                .map((key, index) => `${index + 1}. ${key}`)
-                .join('\n');
-
-            const blob = new Blob([content], { type: 'text/plain' });
+            const blob = new Blob([keys], { type: 'text/plain' });
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             link.download = 'keys.txt';
+            link.click();
+        }
+
+        function generateRandomNumber() {
+            const min = parseInt(document.getElementById('min').value);
+            const max = parseInt(document.getElementById('max').value);
+
+            const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+            // Выводим сгенерированное число
+            document.getElementById('randomOutput').innerText = `Выпало число: ${randomNumber}`;
+        }
+
+        function generateCustomNicks() {
+            const pattern = document.getElementById('customNickInput').value;
+            const quantity = document.getElementById('customNickQuantity').value;
+
+            const nicks = generateNicks(pattern, quantity);
+
+            // Выводим сгенерированные никнеймы
+            document.getElementById('nickOutput').innerText = nicks.join('\n');
+        }
+
+        function generateIliNicks() {
+            const pattern = 'Iilj';
+            const quantity = document.getElementById('customNickQuantity').value;
+
+            const nicks = generateNicks(pattern, quantity);
+
+            // Выводим сгенерированные никнеймы
+            document.getElementById('nickOutput').innerText = nicks.join('\n');
+        }
+
+        function generateQ0Nicks() {
+            const pattern = 'Q0OCc';
+            const quantity = document.getElementById('customNickQuantity').value;
+
+            const nicks = generateNicks(pattern, quantity);
+
+            // Выводим сгенерированные никнеймы
+            document.getElementById('nickOutput').innerText = nicks.join('\n');
+        }
+
+        function generateNicks(pattern, quantity) {
+            const nicks = [];
+            for (let i = 0; i < quantity; i++) {
+                const nick = pattern.split('').map(char => {
+                    switch (char) {
+                        case '%':
+                            return Math.floor(Math.random() * 10);
+                        case '&':
+                            return Math.floor(Math.random() * 10);
+                        case '#':
+                            return String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                        default:
+                            return char;
+                    }
+                }).join('');
+
+                nicks.push(nick);
+            }
+            return nicks;
+        }
+
+        function downloadCustomNicks() {
+            const nicks = document.getElementById('nickOutput').innerText;
+
+            const blob = new Blob([nicks], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'custom-nicks.txt';
             link.click();
         }
 
