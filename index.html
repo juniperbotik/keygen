@@ -101,23 +101,8 @@
     </div>
 
     <div class="container">
-        <label for="length">Length:</label>
-        <input type="number" id="length" min="5" max="100" value="10">
-        <br>
         <label for="quantity">Quantity:</label>
         <input type="number" id="quantity" min="1" max="100" value="1">
-        <br>
-        <label for="nickname">Nickname:</label>
-        <input type="text" id="nickname" placeholder="#Nickname">
-        <br>
-        <label for="expiry">Expiry Date:</label>
-        <input type="date" id="expiry">
-        <br>
-        <label for="format">Download Format:</label>
-        <select id="format">
-            <option value="yml">YAML</option>
-            <option value="txt">TXT</option>
-        </select>
         <br>
         <button onclick="generateKeys()">Generate!</button>
         <div id="keyOutput"></div>
@@ -126,90 +111,47 @@
 
     <script>
         function generateKeys() {
-            const length = document.getElementById('length').value;
             const quantity = document.getElementById('quantity').value;
-            const nickname = document.getElementById('nickname').value;
-            const expiryDate = document.getElementById('expiry').value;
-            
+
             // Устанавливаем текст кнопки
             document.querySelector('button').innerText = `Generate ${quantity > 1 ? quantity + ' Keys' : 'Key'}!`;
 
             for (let i = 0; i < quantity; i++) {
-                const key = generateRandomKey(length);
-                const suffix = generateRandomSuffix();
-                const fullKey = `${key} - ${nickname} - (${formatDate(new Date())}~~${formatDate(new Date(expiryDate))}) ?=lwkey-${suffix}`;
+                const key = generateRandomKey();
                 
                 // Добавляем в лог
                 const log = document.getElementById('log');
-                log.innerHTML = `<div>${fullKey}</div>` + log.innerHTML;
+                log.innerHTML = `<div>${key}</div>` + log.innerHTML;
 
                 // Добавляем анимированный квадрат
-                addAnimatedSquare(fullKey);
+                addAnimatedSquare(key);
             }
         }
 
         function downloadKeys() {
             const log = document.getElementById('log').innerHTML;
-            const format = document.getElementById('format').value;
 
-            let content = '';
-
-            if (format === 'yml') {
-                content = 'LavaWare-keys:\n    keys:\n';
-                const keys = log.split('<div>');
-                keys.shift(); // Remove empty first element
-
-                keys.forEach((key, index) => {
-                    const parts = key.split(' - ');
-                    content += `       {"${index + 1}", "${parts[1]}", "${parts[0]}"}\n`;
-                });
-            } else if (format === 'txt') {
-                content = 'Lavaware keys:\n';
-                const keys = log.split('<div>');
-                keys.shift(); // Remove empty first element
-
-                keys.forEach((key, index) => {
-                    const parts = key.split(' - ');
-                    content += `${index + 1}. - ${parts[1]} - ${parts[0]}\n`;
-                });
-            }
+            const content = log
+                .split('<div>')
+                .slice(1) // Remove empty first element
+                .map((key, index) => `${index + 1}. ${key}`)
+                .join('\n');
 
             const blob = new Blob([content], { type: 'text/plain' });
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
-            link.download = `keys.${format}`;
+            link.download = 'keys.txt';
             link.click();
         }
 
-        function generateRandomKey(length) {
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        function generateRandomKey() {
+            const characters = '0123456789abcdef';
             let key = '';
-            for (let i = 0; i < length; i++) {
+            for (let i = 0; i < 32; i++) {
                 const randomIndex = Math.floor(Math.random() * characters.length);
                 key += characters.charAt(randomIndex);
             }
             return key;
-        }
-
-        function generateRandomSuffix() {
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let suffix = '';
-            for (let i = 0; i < 5; i++) {
-                const randomIndex = Math.floor(Math.random() * characters.length);
-                suffix += characters.charAt(randomIndex);
-            }
-            return suffix;
-        }
-
-        function formatDate(date) {
-            const year = date.getFullYear();
-            let month = date.getMonth() + 1;
-            let day = date.getDate();
-
-            month = month < 10 ? `0${month}` : month;
-            day = day < 10 ? `0${day}` : day;
-
-            return `${year}-${month}-${day}`;
         }
 
         function addAnimatedSquare(text) {
