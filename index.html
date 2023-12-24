@@ -50,26 +50,31 @@
 
         #keyOutput {
             margin-top: 20px;
-            font-size: 130%; /* Увеличение размера цифр на 30% */
+            font-size: 130%;
             color: #333;
         }
 
-        #log {
+        #logContainer {
             position: absolute;
             top: 10px;
             left: 10px;
             text-align: left;
-            font-size: 14px;
-            color: #666;
-            background-color: #f0f0f0;
+        }
+
+        #log {
+            background-color: #000;
+            color: #fff;
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="log"></div>
+    <div id="logContainer">
+        <div id="log"></div>
+    </div>
 
     <div class="container">
         <label for="length">Length:</label>
@@ -77,6 +82,12 @@
         <br>
         <label for="quantity">Quantity:</label>
         <input type="number" id="quantity" min="1" max="100" value="1">
+        <br>
+        <label for="nickname">Nickname:</label>
+        <input type="text" id="nickname" placeholder="#Nickname">
+        <br>
+        <label for="expiry">Expiry Date:</label>
+        <input type="date" id="expiry">
         <br>
         <button onclick="generateKeys()">Generate!</button>
         <div id="keyOutput"></div>
@@ -86,11 +97,16 @@
         function generateKeys() {
             const length = document.getElementById('length').value;
             const quantity = document.getElementById('quantity').value;
+            const nickname = document.getElementById('nickname').value;
+            const expiryDate = document.getElementById('expiry').value;
             
+            // Устанавливаем текст кнопки
+            document.querySelector('button').innerText = `Generate ${quantity > 1 ? quantity + ' Keys' : 'Key'}!`;
+
             for (let i = 0; i < quantity; i++) {
                 const key = generateRandomKey(length);
                 const suffix = generateRandomSuffix();
-                const fullKey = `${key}?=lwkey-${suffix}`;
+                const fullKey = `${key} - ${nickname} - (${formatDate(new Date())}~~${formatDate(new Date(expiryDate))}) ?=lwkey-${suffix}`;
                 
                 // Добавляем в лог
                 const log = document.getElementById('log');
@@ -116,6 +132,17 @@
                 suffix += characters.charAt(randomIndex);
             }
             return suffix;
+        }
+
+        function formatDate(date) {
+            const year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+
+            month = month < 10 ? `0${month}` : month;
+            day = day < 10 ? `0${day}` : day;
+
+            return `${year}-${month}-${day}`;
         }
     </script>
 </body>
