@@ -53,9 +53,20 @@
             font-size: 130%; /* Увеличение размера цифр на 30% */
             color: #333;
         }
+
+        #log {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            text-align: left;
+            font-size: 14px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
+    <div id="log"></div>
+
     <div class="container">
         <label for="length">Length:</label>
         <input type="number" id="length" min="5" max="100" value="10">
@@ -68,7 +79,15 @@
         function generateKey() {
             const length = document.getElementById('length').value;
             const key = generateRandomKey(length);
-            document.getElementById('keyOutput').innerText = `Key: ?=lwkey-${generateRandomSuffix()}`;
+            const suffix = generateRandomSuffix();
+            const fullKey = `${key}?=lwkey-${suffix}`;
+            
+            // Добавляем в лог
+            const log = document.getElementById('log');
+            log.innerHTML = `<div>${fullKey}</div>` + log.innerHTML;
+
+            // Обновляем вывод
+            document.getElementById('keyOutput').innerText = `Key: ${fullKey}`;
         }
 
         function generateRandomKey(length) {
