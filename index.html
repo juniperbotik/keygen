@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key & Nick Generator</title>
+    <title>Discord Embed Generator</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -28,8 +28,14 @@
         input {
             padding: 10px;
             margin-bottom: 20px;
-            width: 60px;
+            width: 300px;
             text-align: center;
+            font-size: 16px;
+        }
+
+        select {
+            padding: 10px;
+            margin-bottom: 20px;
             font-size: 16px;
         }
 
@@ -49,203 +55,61 @@
             background-color: #45a049;
         }
 
-        #keyOutput, #randomOutput, #nickOutput {
+        #embedOutput {
             margin-top: 20px;
-            font-size: 130%;
+            font-size: 16px;
             color: #333;
-        }
-
-        #logContainer {
-            position: absolute;
-            top: 10px;
-            left: 10px;
             text-align: left;
-        }
-
-        #log {
-            background-color: #000;
-            color: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .animated-square {
-            position: fixed;
-            bottom: 0;
-            right: 0;
-            width: 50px;
-            height: 50px;
-            background-color: #000;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            animation: squareAppear 0.5s ease-in-out;
-        }
-
-        @keyframes squareAppear {
-            from {
-                transform: translateY(100%);
-            }
-            to {
-                transform: translateY(0);
-            }
         }
     </style>
 </head>
 <body>
-    <div id="logContainer">
-        <div id="log"></div>
-    </div>
-
     <div class="container">
-        <button onclick="showKeyGen()">KeyGen</button>
-        <button onclick="showRandomGen()">Random</button>
-        <button onclick="showCustomGen()">Custom</button>
+        <label for="field1">Field 1 Text:</label>
+        <input type="text" id="field1" placeholder="Enter text for Field 1">
         <br>
-
-        <div id="keyGen" style="display: none;">
-            <label for="quantityKeyGen">Quantity:</label>
-            <input type="number" id="quantityKeyGen" min="1" max="100" value="1">
-            <br>
-            <button onclick="generateKeys()">Generate Keys</button>
-            <div id="keyOutput"></div>
-            <button onclick="downloadKeys()">Download keys.txt</button>
-        </div>
-
-        <div id="randomGen" style="display: none;">
-            <label for="min">Min:</label>
-            <input type="number" id="min" min="0" value="0">
-            <br>
-            <label for="max">Max:</label>
-            <input type="number" id="max" min="1" value="10">
-            <br>
-            <button onclick="generateRandomNumber()">Generate Random Number</button>
-            <div id="randomOutput"></div>
-        </div>
-
-        <div id="customGen" style="display: none;">
-            <label for="customSymbols">Custom symbols:</label>
-            <input type="text" id="customSymbols" placeholder="&, #, %" value="&, #, %">
-            <br>
-            <button onclick="generateCustomNicks()">Generate Custom Nicks</button>
-            <div id="nickOutput"></div>
-            <button onclick="downloadCustomNicks()">Download Custom-nicks.txt</button>
-            <br>
-            <button onclick="generateRandomLetters()">Generate Random Letters</button>
-        </div>
+        <label for="imageUrl">Image URL:</label>
+        <input type="text" id="imageUrl" placeholder="Enter image URL for Field 1">
+        <br>
+        <label for="footerText">Footer Text:</label>
+        <input type="text" id="footerText" placeholder="Enter text for Footer">
+        <br>
+        <label for="embedColor">Embed Color:</label>
+        <select id="embedColor">
+            <option value="#4287f5">Blue</option>
+            <option value="#f54242">Red</option>
+            <option value="#42f582">Green</option>
+            <option value="#f5e542">Yellow</option>
+            <option value="#7842f5">Purple</option>
+        </select>
+        <br>
+        <button onclick="generateEmbed()">Generate Embed</button>
+        <div id="embedOutput"></div>
     </div>
 
     <script>
-        function showKeyGen() {
-            document.getElementById('keyGen').style.display = 'block';
-            document.getElementById('randomGen').style.display = 'none';
-            document.getElementById('customGen').style.display = 'none';
-        }
+        function generateEmbed() {
+            const field1 = document.getElementById('field1').value;
+            const imageUrl = document.getElementById('imageUrl').value;
+            const footerText = document.getElementById('footerText').value;
+            const embedColor = document.getElementById('embedColor').value;
 
-        function showRandomGen() {
-            document.getElementById('keyGen').style.display = 'none';
-            document.getElementById('randomGen').style.display = 'block';
-            document.getElementById('customGen').style.display = 'none';
-        }
+            const embed = {
+                title: 'Generated Discord Embed',
+                color: parseInt(embedColor.replace('#', ''), 16),
+                fields: [
+                    {
+                        name: 'Field 1',
+                        value: field1,
+                        inline: false,
+                    },
+                ],
+                image: imageUrl ? { url: imageUrl } : undefined,
+                footer: footerText ? { text: footerText } : undefined,
+            };
 
-        function showCustomGen() {
-            document.getElementById('keyGen').style.display = 'none';
-            document.getElementById('randomGen').style.display = 'none';
-            document.getElementById('customGen').style.display = 'block';
-        }
-
-        function generateKeys() {
-            const quantity = document.getElementById('quantityKeyGen').value;
-
-            // Устанавливаем текст кнопки
-            document.querySelector('#keyGen button').innerText = `Generate ${quantity > 1 ? quantity + ' Keys' : 'Key'}!`;
-
-            const keys = [];
-            for (let i = 0; i < quantity; i++) {
-                const key = generateRandomKey();
-                keys.push(key);
-
-                // Добавляем анимированный квадрат
-                addAnimatedSquare(key);
-            }
-
-            // Выводим сгенерированные ключи
-            document.getElementById('keyOutput').innerText = keys.join('\n');
-        }
-
-        function downloadKeys() {
-            const keys = document.getElementById('keyOutput').innerText;
-
-            const blob = new Blob([keys], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'keys.txt';
-            link.click();
-        }
-
-        function generateRandomNumber() {
-            const min = parseInt(document.getElementById('min').value);
-            const max = parseInt(document.getElementById('max').value);
-
-            const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-
-            // Выводим сгенерированное число
-            document.getElementById('randomOutput').innerText = `Выпало число: ${randomNumber}`;
-        }
-
-        function generateCustomNicks() {
-            const symbols = document.getElementById('customSymbols').value;
-            const quantity = document.getElementById('customNickQuantity').value;
-
-            const nicks = generateCustomNicksWithSymbols(symbols, quantity);
-
-            // Выводим сгенерированные никнеймы
-            document.getElementById('nickOutput').innerText = nicks.join('\n');
-        }
-
-        function generateRandomLetters() {
-            const letters = generateCustomNicksWithSymbols('!', 5);
-
-            // Выводим сгенерированные буквы
-            alert(`Generated Random Letters: ${letters.join('')}`);
-        }
-
-        function downloadCustomNicks() {
-            const nicks = document.getElementById('nickOutput').innerText;
-
-            const blob = new Blob([nicks], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'custom-nicks.txt';
-            link.click();
-        }
-
-        function generateRandomKey() {
-            const characters = '0123456789abcdef';
-            let key = '';
-            for (let i = 0; i < 32; i++) {
-                const randomIndex = Math.floor(Math.random() * characters.length);
-                key += characters.charAt(randomIndex);
-            }
-            return key;
-        }
-
-        function addAnimatedSquare(text) {
-            const square = document.createElement('div');
-            square.classList.add('animated-square');
-            square.innerText = text;
-            document.body.appendChild(square);
-
-            setTimeout(() => {
-                square.style.animation = 'squareDisappear 0.5s ease-in-out';
-                setTimeout(() => {
-                    square.remove();
-                }, 500);
-            }, 5000);
+            // Выводим сгенерированный Embed в виде текста
+            document.getElementById('embedOutput').innerText = JSON.stringify(embed, null, 2);
         }
     </script>
 </body>
