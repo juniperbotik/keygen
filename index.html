@@ -61,6 +61,10 @@
             text-align: left;
             font-size: 14px;
             color: #666;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -71,23 +75,27 @@
         <label for="length">Length:</label>
         <input type="number" id="length" min="5" max="100" value="10">
         <br>
-        <button onclick="generateKey()">Generate!</button>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" min="1" max="100" value="1">
+        <br>
+        <button onclick="generateKeys()">Generate!</button>
         <div id="keyOutput"></div>
     </div>
 
     <script>
-        function generateKey() {
+        function generateKeys() {
             const length = document.getElementById('length').value;
-            const key = generateRandomKey(length);
-            const suffix = generateRandomSuffix();
-            const fullKey = `${key}?=lwkey-${suffix}`;
+            const quantity = document.getElementById('quantity').value;
             
-            // Добавляем в лог
-            const log = document.getElementById('log');
-            log.innerHTML = `<div>${fullKey}</div>` + log.innerHTML;
-
-            // Обновляем вывод
-            document.getElementById('keyOutput').innerText = `Key: ${fullKey}`;
+            for (let i = 0; i < quantity; i++) {
+                const key = generateRandomKey(length);
+                const suffix = generateRandomSuffix();
+                const fullKey = `${key}?=lwkey-${suffix}`;
+                
+                // Добавляем в лог
+                const log = document.getElementById('log');
+                log.innerHTML = `<div>${fullKey}</div>` + log.innerHTML;
+            }
         }
 
         function generateRandomKey(length) {
