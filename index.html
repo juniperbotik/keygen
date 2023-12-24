@@ -113,8 +113,15 @@
         <label for="expiry">Expiry Date:</label>
         <input type="date" id="expiry">
         <br>
+        <label for="format">Download Format:</label>
+        <select id="format">
+            <option value="yml">YAML</option>
+            <option value="txt">TXT</option>
+        </select>
+        <br>
         <button onclick="generateKeys()">Generate!</button>
         <div id="keyOutput"></div>
+        <button onclick="downloadKeys()">Download Keys</button>
     </div>
 
     <script>
@@ -139,6 +146,39 @@
                 // Добавляем анимированный квадрат
                 addAnimatedSquare(fullKey);
             }
+        }
+
+        function downloadKeys() {
+            const log = document.getElementById('log').innerHTML;
+            const format = document.getElementById('format').value;
+
+            let content = '';
+
+            if (format === 'yml') {
+                content = 'LavaWare-keys:\n    keys:\n';
+                const keys = log.split('<div>');
+                keys.shift(); // Remove empty first element
+
+                keys.forEach((key, index) => {
+                    const parts = key.split(' - ');
+                    content += `       {"${index + 1}", "${parts[1]}", "${parts[0]}"}\n`;
+                });
+            } else if (format === 'txt') {
+                content = 'Lavaware keys:\n';
+                const keys = log.split('<div>');
+                keys.shift(); // Remove empty first element
+
+                keys.forEach((key, index) => {
+                    const parts = key.split(' - ');
+                    content += `${index + 1}. - ${parts[1]} - ${parts[0]}\n`;
+                });
+            }
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = `keys.${format}`;
+            link.click();
         }
 
         function generateRandomKey(length) {
