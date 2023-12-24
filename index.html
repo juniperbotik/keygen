@@ -3,55 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LavaWare Coming Soon</title>
+    <title>Key Generator</title>
     <style>
-        @font-face {
-            font-family: 'Minecraft';
-            src: url('minecraft.otf') format('opentype');
-        }
-
         body {
-            background-color: #1a1a1a;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            margin: 0;
-            font-family: 'Minecraft', sans-serif; /* Используем шрифт Minecraft */
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            color: #ff0000; /* Красный цвет текста */
-            overflow: hidden;
         }
 
-        h1 {
-            font-size: 2.5em;
-            margin: 0;
-            position: relative;
-            animation: glow 1s ease-in-out infinite alternate, shrink 3s infinite;
+        input {
+            padding: 8px;
+            margin-bottom: 10px;
+            width: 60px;
+            text-align: center;
         }
 
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
-            }
-            to {
-                text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000, 0 0 40px #ff0000;
-            }
+        button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        @keyframes shrink {
-            0%, 100% {
-                font-size: 2.5em;
-            }
-            50% {
-                font-size: 1.5em;
-            }
+        #keyOutput {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div>
-        <h1>LavaWare soon...</h1>
+    <div class="container">
+        <label for="length">Length:</label>
+        <input type="number" id="length" min="5" max="100" value="10">
+        <br>
+        <button onclick="generateKey()">Generate!</button>
+        <div id="keyOutput"></div>
     </div>
+
+    <script>
+        function generateKey() {
+            const length = document.getElementById('length').value;
+            const key = generateRandomKey(length);
+            document.getElementById('keyOutput').innerText = `Key: ${key}`;
+        }
+
+        function generateRandomKey(length) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let key = '';
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                key += characters.charAt(randomIndex);
+            }
+            return key;
+        }
+    </script>
 </body>
 </html>
