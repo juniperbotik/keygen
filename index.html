@@ -102,146 +102,48 @@
     </div>
 
     <div class="container">
-        <button onclick="showKeyGen()">KeyGen</button>
-        <button onclick="showRandomGen()">Random</button>
-        <button onclick="showNickGen()">NickGen</button>
-
-        <div id="keyGen" style="display: none;">
-            <label for="quantity">Quantity:</label>
-            <input type="number" id="quantityKeyGen" min="1" max="100" value="1">
-            <br>
-            <button onclick="generateKeys()">Generate Keys</button>
-            <div id="keyOutput"></div>
-            <button onclick="downloadKeys()">Download keys.txt</button>
-        </div>
-
-        <div id="randomGen" style="display: none;">
-            <label for="min">Min:</label>
-            <input type="number" id="min" min="0" value="0">
-            <br>
-            <label for="max">Max:</label>
-            <input type="number" id="max" min="1" value="10">
-            <br>
-            <button onclick="generateRandomNumber()">Generate Random Number</button>
-            <div id="randomOutput"></div>
-        </div>
-
-        <div id="nickGen" style="display: none;">
-            <button onclick="generateCustomNicks()">Custom</button>
-            <button onclick="generateIliNicks()">IliNicks</button>
-            <button onclick="generateQ0Nicks()">Q0Nicks</button>
-            <br>
-            <input type="text" id="customNickInput" placeholder="Enter Nickname Pattern">
-            <br>
-            <input type="number" id="customNickQuantity" min="1" value="1">
-            <br>
-            <button onclick="generateCustomNicks()">Generate Custom Nicks</button>
-            <div id="nickOutput"></div>
-            <button onclick="downloadCustomNicks()">Download Custom-nicks.txt</button>
-        </div>
+        <button onclick="showCustomGen()">Custom</button>
+        <br>
+        <label for="customSymbols">Custom symbols:</label>
+        <input type="text" id="customSymbols" placeholder="&, #, %" value="&, #, %">
+        <br>
+        <button onclick="generateCustomNicks()">Generate Custom Nicks</button>
+        <div id="nickOutput"></div>
+        <button onclick="downloadCustomNicks()">Download Custom-nicks.txt</button>
+        <br>
+        <button onclick="generateRandomLetters()">Generate Random Letters</button>
     </div>
 
     <script>
-        function showKeyGen() {
-            document.getElementById('keyGen').style.display = 'block';
-            document.getElementById('randomGen').style.display = 'none';
-            document.getElementById('nickGen').style.display = 'none';
-        }
-
-        function showRandomGen() {
-            document.getElementById('keyGen').style.display = 'none';
-            document.getElementById('randomGen').style.display = 'block';
-            document.getElementById('nickGen').style.display = 'none';
-        }
-
-        function showNickGen() {
-            document.getElementById('keyGen').style.display = 'none';
-            document.getElementById('randomGen').style.display = 'none';
-            document.getElementById('nickGen').style.display = 'block';
-        }
-
-        function generateKeys() {
-            const quantity = document.getElementById('quantityKeyGen').value;
-
-            // Устанавливаем текст кнопки
-            document.querySelector('#keyGen button').innerText = `Generate ${quantity > 1 ? quantity + ' Keys' : 'Key'}!`;
-
-            const keys = [];
-            for (let i = 0; i < quantity; i++) {
-                const key = generateRandomKey();
-                keys.push(key);
-
-                // Добавляем анимированный квадрат
-                addAnimatedSquare(key);
-            }
-
-            // Выводим сгенерированные ключи
-            document.getElementById('keyOutput').innerText = keys.join('\n');
-        }
-
-        function downloadKeys() {
-            const keys = document.getElementById('keyOutput').innerText;
-
-            const blob = new Blob([keys], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'keys.txt';
-            link.click();
-        }
-
-        function generateRandomNumber() {
-            const min = parseInt(document.getElementById('min').value);
-            const max = parseInt(document.getElementById('max').value);
-
-            const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-
-            // Выводим сгенерированное число
-            document.getElementById('randomOutput').innerText = `Выпало число: ${randomNumber}`;
+        function showCustomGen() {
+            document.getElementById('customGen').style.display = 'block';
         }
 
         function generateCustomNicks() {
-            const pattern = document.getElementById('customNickInput').value;
+            const symbols = document.getElementById('customSymbols').value;
             const quantity = document.getElementById('customNickQuantity').value;
 
-            const nicks = generateNicks(pattern, quantity);
+            const nicks = generateCustomNicksWithSymbols(symbols, quantity);
 
             // Выводим сгенерированные никнеймы
             document.getElementById('nickOutput').innerText = nicks.join('\n');
         }
 
-        function generateIliNicks() {
-            const pattern = 'Iilj';
-            const quantity = document.getElementById('customNickQuantity').value;
-
-            const nicks = generateNicks(pattern, quantity);
-
-            // Выводим сгенерированные никнеймы
-            document.getElementById('nickOutput').innerText = nicks.join('\n');
-        }
-
-        function generateQ0Nicks() {
-            const pattern = 'Q0OCc';
-            const quantity = document.getElementById('customNickQuantity').value;
-
-            const nicks = generateNicks(pattern, quantity);
-
-            // Выводим сгенерированные никнеймы
-            document.getElementById('nickOutput').innerText = nicks.join('\n');
-        }
-
-        function generateNicks(pattern, quantity) {
+        function generateCustomNicksWithSymbols(symbols, quantity) {
             const nicks = [];
             for (let i = 0; i < quantity; i++) {
-                const nick = pattern.split('').map(char => {
-                    switch (char) {
+                const nick = symbols.split(',').map(symbol => {
+                    switch (symbol.trim()) {
                         case '%':
                             return Math.floor(Math.random() * 10);
                         case '&':
                             return Math.floor(Math.random() * 10);
                         case '#':
                             return String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                        case '!':
+                            return String.fromCharCode(65 + Math.floor(Math.random() * 26)).toLowerCase();
                         default:
-                            return char;
+                            return symbol;
                     }
                 }).join('');
 
@@ -260,28 +162,11 @@
             link.click();
         }
 
-        function generateRandomKey() {
-            const characters = '0123456789abcdef';
-            let key = '';
-            for (let i = 0; i < 32; i++) {
-                const randomIndex = Math.floor(Math.random() * characters.length);
-                key += characters.charAt(randomIndex);
-            }
-            return key;
-        }
+        function generateRandomLetters() {
+            const letters = generateCustomNicksWithSymbols('!', 5);
 
-        function addAnimatedSquare(text) {
-            const square = document.createElement('div');
-            square.classList.add('animated-square');
-            square.innerText = text;
-            document.body.appendChild(square);
-
-            setTimeout(() => {
-                square.style.animation = 'squareDisappear 0.5s ease-in-out';
-                setTimeout(() => {
-                    square.remove();
-                }, 500);
-            }, 5000);
+            // Выводим сгенерированные буквы
+            alert(`Generated Random Letters: ${letters.join('')}`);
         }
     </script>
 </body>
