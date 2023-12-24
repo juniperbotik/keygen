@@ -69,6 +69,30 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
+
+        .animated-square {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            animation: squareAppear 0.5s ease-in-out;
+        }
+
+        @keyframes squareAppear {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -111,6 +135,9 @@
                 // Добавляем в лог
                 const log = document.getElementById('log');
                 log.innerHTML = `<div>${fullKey}</div>` + log.innerHTML;
+
+                // Добавляем анимированный квадрат
+                addAnimatedSquare(fullKey);
             }
         }
 
@@ -143,6 +170,20 @@
             day = day < 10 ? `0${day}` : day;
 
             return `${year}-${month}-${day}`;
+        }
+
+        function addAnimatedSquare(text) {
+            const square = document.createElement('div');
+            square.classList.add('animated-square');
+            square.innerText = text;
+            document.body.appendChild(square);
+
+            setTimeout(() => {
+                square.style.animation = 'squareDisappear 0.5s ease-in-out';
+                setTimeout(() => {
+                    square.remove();
+                }, 500);
+            }, 5000);
         }
     </script>
 </body>
