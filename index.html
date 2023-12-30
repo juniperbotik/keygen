@@ -3,114 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Embed Generator</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        input {
-            padding: 10px;
-            margin-bottom: 20px;
-            width: 300px;
-            text-align: center;
-            font-size: 16px;
-        }
-
-        select {
-            padding: 10px;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-
-        button {
-            padding: 15px 30px;
-            background-color: #4caf50;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s ease-in-out;
-            margin: 5px;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        #embedOutput {
-            margin-top: 20px;
-            font-size: 16px;
-            color: #333;
-            text-align: left;
-        }
-    </style>
+    <title>Random Nicknames</title>
 </head>
 <body>
-    <div class="container">
-        <label for="field1">Field 1 Text:</label>
-        <input type="text" id="field1" placeholder="Enter text for Field 1">
-        <br>
-        <label for="imageUrl">Image URL:</label>
-        <input type="text" id="imageUrl" placeholder="Enter image URL for Field 1">
-        <br>
-        <label for="footerText">Footer Text:</label>
-        <input type="text" id="footerText" placeholder="Enter text for Footer">
-        <br>
-        <label for="embedColor">Embed Color:</label>
-        <select id="embedColor">
-            <option value="#4287f5">Blue</option>
-            <option value="#f54242">Red</option>
-            <option value="#42f582">Green</option>
-            <option value="#f5e542">Yellow</option>
-            <option value="#7842f5">Purple</option>
-        </select>
-        <br>
-        <button onclick="generateEmbed()">Generate Embed</button>
-        <div id="embedOutput"></div>
-    </div>
 
-    <script>
-        function generateEmbed() {
-            const field1 = document.getElementById('field1').value;
-            const imageUrl = document.getElementById('imageUrl').value;
-            const footerText = document.getElementById('footerText').value;
-            const embedColor = document.getElementById('embedColor').value;
+<script>
+    function generateNickname() {
+        const nicknameLength = Math.floor(Math.random() * (12 - 8 + 1)) + 8;
+        const numbersAtBeginning = Math.random().toString().slice(2, 4);
+        const randomNickname = Array.from({ length: nicknameLength - 4 }, () =>
+            String.fromCharCode(Math.floor(Math.random() * (122 - 97 + 1)) + 97)
+        ).join('');
+        const generatedNickname = numbersAtBeginning + randomNickname + "lw" + Math.floor(Math.random() * 1000) + "<br>";
+        return generatedNickname;
+    }
 
-            const embed = {
-                title: 'Generated Discord Embed',
-                color: parseInt(embedColor.replace('#', ''), 16),
-                fields: [
-                    {
-                        name: 'Field 1',
-                        value: field1,
-                        inline: false,
-                    },
-                ],
-                image: imageUrl ? { url: imageUrl } : undefined,
-                footer: footerText ? { text: footerText } : undefined,
-            };
+    // Генерация 1000 никнеймов и их вывод
+    for (let i = 0; i < 1000; i++) {
+        document.write(generateNickname());
+    }
+</script>
 
-            // Выводим сгенерированный Embed в виде текста
-            document.getElementById('embedOutput').innerText = JSON.stringify(embed, null, 2);
-        }
-    </script>
 </body>
 </html>
